@@ -1,0 +1,37 @@
+{
+  "name": "secure-password-manager",
+  "version": "1.0.0",
+  "description": "Secure password manager with mobile app support",
+  "main": "index.js",
+  "scripts": {
+    "start": "cd backend && npm start",
+    "dev": "cd backend && npm run dev",
+    "cap:sync": "npx cap sync",
+    "cap:copy": "npx cap copy",
+    "cap:open:android": "npx cap open android",
+    "cap:open:ios": "npx cap open ios",
+    "cap:update": "npx cap update",
+    "cap:doctor": "npx cap doctor"
+  },
+  "keywords": [
+    "password-manager",
+    "security",
+    "encryption",
+    "mobile-app"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@capacitor/android": "^5.7.8",
+    "@capacitor/app": "^5.0.8",
+    "@capacitor/core": "^5.7.8",
+    "@capacitor/ios": "^5.7.8",
+    "@capacitor/keyboard": "^5.0.9",
+    "@capacitor/preferences": "^5.0.8",
+    "@capacitor/splash-screen": "^5.0.8",
+    "@capacitor/status-bar": "^5.0.8"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^5.7.8"
+  }
+}

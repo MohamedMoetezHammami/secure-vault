@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#6366f1">
+    <title>Dashboard - Secure Password Manager</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <button id="mobileMenuToggle" class="mobile-menu-toggle" aria-label="Toggle menu">☰</button>
+            <div class="nav-brand">
+                <h2>🔒 Secure Vault</h2>
+            </div>
+            <div class="nav-actions">
+                <button id="themeToggle" class="btn-icon" title="Toggle Theme">🌓</button>
+                <div class="user-menu">
+                    <button id="userMenuBtn" class="btn-icon">👤</button>
+                    <div id="userMenuDropdown" class="dropdown-menu">
+                        <div class="user-info">
+                            <strong id="userDisplayName"></strong>
+                            <small id="userEmail"></small>
+                        </div>
+                        <hr>
+                        <a href="#" id="settingsLink">⚙️ Settings</a>
+                        <a href="#" id="exportLink">📥 Export Data</a>
+                        <a href="#" id="importLink">📤 Import Data</a>
+                        <hr>
+                        <a href="#" id="logoutLink">🚪 Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobileMenuOverlay" class="mobile-menu-overlay"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <button class="btn btn-primary btn-block" id="addPasswordBtn">
+                    ➕ Add Password
+                </button>
+            </div>
+            <div class="sidebar-section">
+                <h3>Categories</h3>
+                <ul class="category-list" id="categoryList">
+                    <li class="active" data-category="all">All Passwords</li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h3>Tools</h3>
+                <ul class="tool-list">
+                    <li><a href="#" id="passwordGeneratorLink">🔑 Password Generator</a></li>
+                    <li><a href="#" id="securityCheckLink">🔒 Security Check</a></li>
+                    <li><a href="#" id="sharedPasswordsLink">👥 Shared Passwords</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Dashboard Content -->
+        <div class="dashboard-content">
+            <!-- Search and Filter Bar -->
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Search passwords...">
+                <select id="sortSelect">
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="az">A-Z</option>
+                    <option value="za">Z-A</option>
+                </select>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3 id="totalPasswords">0</h3>
+                    <p>Total Passwords</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="weakPasswords">0</h3>
+                    <p>Weak Passwords</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="reusedPasswords">0</h3>
+                    <p>Reused Passwords</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="securityScore">-</h3>
+                    <p>Security Score</p>
+                </div>
+            </div>
+
+            <!-- Passwords List -->
+            <div class="passwords-list" id="passwordsList">
+                <div class="empty-state">
+                    <p>No passwords saved yet. Click "Add Password" to get started!</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation (Mobile) -->
+    <nav class="bottom-nav">
+        <a href="#" class="bottom-nav-item active" id="bottomNavHome" data-section="home">
+            <span class="icon">🏠</span>
+            <span>Home</span>
+        </a>
+        <a href="#" class="bottom-nav-item" id="bottomNavAdd" data-section="add">
+            <span class="icon">➕</span>
+            <span>Add</span>
+        </a>
+        <a href="#" class="bottom-nav-item" id="bottomNavGenerator" data-section="generator">
+            <span class="icon">🎲</span>
+            <span>Generate</span>
+        </a>
+        <a href="#" class="bottom-nav-item" id="bottomNavSecurity" data-section="security">
+            <span class="icon">🔒</span>
+            <span>Security</span>
+        </a>
+        <a href="#" class="bottom-nav-item" id="bottomNavMenu" data-section="menu">
+            <span class="icon">☰</span>
+            <span>Menu</span>
+        </a>
+    </nav>
+
+    <!-- Add/Edit Password Modal -->
+    <div id="passwordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add Password</h2>
+                <button class="modal-close" id="closeModal">&times;</button>
+            </div>
+            <form id="passwordForm">
+                <input type="hidden" id="passwordId">
+                <div class="form-group">
+                    <label for="website">Website/Service *</label>
+                    <input type="text" id="website" required>
+                </div>
+                <div class="form-group">
+                    <label for="username">Username/Email *</label>
+                    <input type="text" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password *</label>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="password" required>
+                        <button type="button" class="toggle-password" data-target="password">👁️</button>
+                        <button type="button" class="btn-icon" id="generatePasswordBtn" title="Generate Password">🎲</button>
+                    </div>
+                    <div class="password-strength" id="passwordStrength"></div>
+                </div>
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category">
+                        <option value="Uncategorized">Uncategorized</option>
+                        <option value="Social Media">Social Media</option>
+                        <option value="Email">Email</option>
+                        <option value="Banking">Banking</option>
+                        <option value="Shopping">Shopping</option>
+                        <option value="Work">Work</option>
+                        <option value="Personal">Personal</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="notes">Notes</label>
+                    <textarea id="notes" rows="3"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Password Generator Modal -->
+    <div id="generatorModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Password Generator</h2>
+                <button class="modal-close" id="closeGeneratorModal">&times;</button>
+            </div>
+            <div class="generator-content">
+                <div class="generator-display">
+                    <input type="text" id="generatedPassword" readonly>
+                    <button class="btn btn-primary" id="copyGeneratedBtn">Copy</button>
+                </div>
+                <div class="generator-options">
+                    <div class="form-group">
+                        <label for="passwordLength">
+                            Length: <span id="lengthValue">16</span>
+                        </label>
+                        <input type="range" id="passwordLength" min="8" max="64" value="16">
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="includeUppercase" checked>
+                            Uppercase (A-Z)
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="includeLowercase" checked>
+                            Lowercase (a-z)
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="includeNumbers" checked>
+                            Numbers (0-9)
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="includeSymbols" checked>
+                            Symbols (!@#$%^&*)
+                        </label>
+                    </div>
+                    <button class="btn btn-primary btn-block" id="generateBtn">Generate Password</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security Check Modal -->
+    <div id="securityCheckModal" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2>🔒 Security Check</h2>
+                <button class="modal-close" id="closeSecurityCheckModal">&times;</button>
+            </div>
+            <div class="security-check-content">
+                <div class="security-summary" id="securitySummary">
+                    <p>Analyzing your passwords...</p>
+                </div>
+                <div class="security-details" id="securityDetails">
+                    <div class="security-item" id="weakPasswordsSection" style="display: none;">
+                        <h3>⚠️ Weak Passwords</h3>
+                        <ul id="weakPasswordsList"></ul>
+                    </div>
+                    <div class="security-item" id="reusedPasswordsSection" style="display: none;">
+                        <h3>🔄 Reused Passwords</h3>
+                        <ul id="reusedPasswordsList"></ul>
+                    </div>
+                    <div class="security-item" id="breachedPasswordsSection" style="display: none;">
+                        <h3>🚨 Breached Passwords</h3>
+                        <ul id="breachedPasswordsList"></ul>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" id="runSecurityCheckBtn">Run Security Check</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shared Passwords Modal -->
+    <div id="sharedPasswordsModal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2>👥 Shared Passwords</h2>
+                <button class="modal-close" id="closeSharedPasswordsModal">&times;</button>
+            </div>
+            <div class="shared-passwords-content">
+                <div class="shared-passwords-list" id="sharedPasswordsList">
+                    <p>Loading shared passwords...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2>⚙️ Settings</h2>
+                <button class="modal-close" id="closeSettingsModal">&times;</button>
+            </div>
+            <div class="settings-content">
+                <form id="settingsForm">
+                    <div class="form-group">
+                        <label for="themeSetting">Theme</label>
+                        <select id="themeSetting">
+                            <option value="light">Light</option>
+                            <option value="dark">Dark</option>
+                            <option value="auto">Auto (System)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="autoLogoutSetting">
+                            Auto-logout after inactivity (minutes)
+                        </label>
+                        <input type="number" id="autoLogoutSetting" min="5" max="120" value="30">
+                        <small>Automatically log out after this many minutes of inactivity</small>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="rememberMasterPassword">
+                            Remember master password (not recommended)
+                        </label>
+                        <small>If enabled, your master password will be remembered in this browser</small>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="showPasswordStrength">
+                            Show password strength indicator
+                        </label>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="cancelSettingsBtn">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Settings</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Data Modal -->
+    <div id="exportModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2>📥 Export Data</h2>
+                <button class="modal-close" id="closeExportModal">&times;</button>
+            </div>
+            <div class="export-content">
+                <p>Export all your passwords to a JSON file for backup.</p>
+                <div class="form-group">
+                    <label>
+                        <input type="radio" name="exportFormat" value="encrypted" checked>
+                        Export encrypted (recommended) - Can be imported back securely
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="radio" name="exportFormat" value="decrypted">
+                        Export decrypted (plaintext) - For migration to other password managers
+                    </label>
+                    <small class="warning">⚠️ Warning: Decrypted export contains plaintext passwords. Keep this file secure!</small>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelExportBtn">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="exportDataBtn">Export Data</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Data Modal -->
+    <div id="importModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2>📤 Import Data</h2>
+                <button class="modal-close" id="closeImportModal">&times;</button>
+            </div>
+            <div class="import-content">
+                <p>Import passwords from a JSON backup file.</p>
+                <div class="form-group">
+                    <label for="importFile">Select JSON file</label>
+                    <input type="file" id="importFile" accept=".json" required>
+                    <small>Select the exported JSON file from this password manager</small>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="overwriteExisting">
+                        Overwrite existing passwords with same website/username
+                    </label>
+                </div>
+                <div id="importPreview" style="display: none; margin: 1rem 0; padding: 1rem; background: var(--bg-secondary); border-radius: var(--border-radius);">
+                    <strong>Preview:</strong>
+                    <p id="importPreviewText"></p>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelImportBtn">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="importDataBtn" disabled>Import Data</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Scripts -->
+    <!-- Mobile initialization (load first, but will only work in Capacitor) -->
+    <script src="js/mobile-init.js"></script>
+    <!-- Load CryptoJS first -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <!-- Load utility scripts (must be before dashboard.js) -->
+    <script src="js/encryption.js"></script>
+    <script src="js/password-generator.js"></script>
+    <script src="js/ui.js"></script>
+    <!-- Dashboard module (loads last) -->
+    <script type="module" src="js/dashboard.js"></script>
+</body>
+</html>
+

@@ -90,6 +90,21 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Root route - API info
+app.get('/', (req, res) => {
+  res.json({
+    name: 'Secure Vault API',
+    version: '1.0.0',
+    status: 'running',
+    endpoints: {
+      health: '/api/health',
+      auth: '/api/auth',
+      passwords: '/api/passwords'
+    },
+    documentation: 'https://github.com/your-repo/secure-vault'
+  });
+});
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/passwords', passwordRoutes);

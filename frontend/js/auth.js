@@ -27,7 +27,7 @@ const auth = getAuth(app);
 // ===========================================
 // PRODUCTION API URL - Update this after deploying to Render
 // ===========================================
-const PRODUCTION_API_URL = 'https://secure-vault-api.onrender.com/api';
+const PRODUCTION_API_URL = 'https://secure-vault-api-l762.onrender.com/api';
 
 // Get API base URL based on platform
 function getApiBaseUrl() {

@@ -1,6 +1,6 @@
 /* ============================================
    SECURE VAULT - Authentication Pages
-   Modern Glassmorphism Design
+   2025 Modern Glassmorphism Design
    ============================================ */
 
 /* Auth Container - Full Page Background */
@@ -15,20 +15,24 @@
   overflow: hidden;
   background:
     linear-gradient(135deg,
-      var(--primary-600) 0%,
-      var(--secondary-color) 50%,
-      var(--primary-500) 100%
+      #312e81 0%,
+      #6366f1 25%,
+      #d946ef 50%,
+      #6366f1 75%,
+      #312e81 100%
     );
   background-size: 400% 400%;
-  animation: gradientShift 15s ease infinite;
+  animation: authGradientShift 20s ease infinite;
 }
 
-@keyframes gradientShift {
+@keyframes authGradientShift {
   0%, 100% { background-position: 0% 50%; }
+  25% { background-position: 50% 100%; }
   50% { background-position: 100% 50%; }
+  75% { background-position: 50% 0%; }
 }
 
-/* Animated Background Elements */
+/* Animated Background Elements - Aurora Effect */
 .container::before {
   content: '';
   position: absolute;
@@ -37,78 +41,82 @@
   width: 200%;
   height: 200%;
   background:
-    radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.05) 0%, transparent 30%);
-  animation: floatBackground 20s ease-in-out infinite;
+    radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(168, 85, 247, 0.1) 0%, transparent 30%),
+    radial-gradient(circle at 60% 60%, rgba(99, 102, 241, 0.12) 0%, transparent 40%);
+  animation: floatBackground 25s ease-in-out infinite;
   pointer-events: none;
 }
 
 @keyframes floatBackground {
-  0%, 100% { transform: translate(0, 0) rotate(0deg); }
-  25% { transform: translate(2%, 2%) rotate(1deg); }
-  50% { transform: translate(0, 4%) rotate(0deg); }
-  75% { transform: translate(-2%, 2%) rotate(-1deg); }
+  0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+  25% { transform: translate(3%, 3%) rotate(2deg) scale(1.02); }
+  50% { transform: translate(0, 5%) rotate(0deg) scale(1); }
+  75% { transform: translate(-3%, 3%) rotate(-2deg) scale(1.02); }
 }
 
-/* Decorative Floating Shapes */
+/* Decorative Floating Orbs */
 .container::after {
   content: '';
   position: absolute;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, rgba(217, 70, 239, 0.15) 0%, rgba(99, 102, 241, 0.1) 40%, transparent 70%);
   border-radius: 50%;
-  top: -200px;
-  right: -200px;
-  animation: pulse 8s ease-in-out infinite;
+  top: -250px;
+  right: -250px;
+  animation: orbPulse 10s ease-in-out infinite;
   pointer-events: none;
 }
 
-@keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: 0.5; }
-  50% { transform: scale(1.1); opacity: 0.8; }
+@keyframes orbPulse {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.6; }
+  50% { transform: scale(1.15) rotate(180deg); opacity: 0.9; }
 }
 
-/* Auth Card - Glassmorphism */
+/* Auth Card - 2025 Premium Glassmorphism */
 .auth-container {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
   border-radius: var(--radius-2xl);
   padding: var(--space-10);
   max-width: 480px;
   width: 100%;
   box-shadow:
-    0 25px 50px -12px rgba(0, 0, 0, 0.25),
-    0 0 0 1px rgba(255, 255, 255, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    0 30px 60px -15px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 0 80px rgba(99, 102, 241, 0.15);
   position: relative;
   z-index: 10;
-  animation: cardSlideUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: cardSlideUp 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
   overflow: hidden;
+  transform-style: preserve-3d;
 }
 
 .dark-mode .auth-container {
-  background: rgba(15, 23, 42, 0.95);
+  background: rgba(15, 15, 20, 0.92);
   box-shadow:
-    0 25px 50px -12px rgba(0, 0, 0, 0.5),
-    0 0 0 1px rgba(255, 255, 255, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    0 30px 60px -15px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 0 100px rgba(99, 102, 241, 0.2);
 }
 
 @keyframes cardSlideUp {
   from {
     opacity: 0;
-    transform: translateY(40px) scale(0.95);
+    transform: translateY(60px) scale(0.9) rotateX(-10deg);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0) scale(1) rotateX(0);
   }
 }
 
-/* Decorative Top Gradient Line */
+/* Decorative Top Gradient Line - Animated */
 .auth-container::before {
   content: '';
   position: absolute;
@@ -117,17 +125,32 @@
   right: 0;
   height: 4px;
   background: linear-gradient(90deg,
-    var(--primary-500),
-    var(--secondary-color),
-    var(--primary-400)
+    #6366f1,
+    #d946ef,
+    #ec4899,
+    #d946ef,
+    #6366f1
   );
-  background-size: 200% 100%;
-  animation: shimmerLine 3s linear infinite;
+  background-size: 300% 100%;
+  animation: shimmerLine 4s linear infinite;
 }
 
 @keyframes shimmerLine {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% { background-position: 300% 0; }
+  100% { background-position: -300% 0; }
+}
+
+/* Secondary glow effect */
+.auth-container::after {
+  content: '';
+  position: absolute;
+  bottom: -50%;
+  left: -25%;
+  width: 150%;
+  height: 100%;
+  background: radial-gradient(ellipse at center, rgba(99, 102, 241, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: -1;
 }
 
 /* Logo Section */
@@ -140,22 +163,25 @@
   font-size: 2.75rem;
   font-weight: 800;
   background: linear-gradient(135deg,
-    var(--primary-500) 0%,
-    var(--secondary-color) 50%,
-    var(--primary-400) 100%
+    #6366f1 0%,
+    #d946ef 25%,
+    #ec4899 50%,
+    #d946ef 75%,
+    #6366f1 100%
   );
-  background-size: 200% auto;
+  background-size: 300% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   letter-spacing: -1px;
   margin-bottom: var(--space-3);
-  animation: shimmerText 3s linear infinite;
+  animation: shimmerText 5s linear infinite;
+  filter: drop-shadow(0 0 30px rgba(99, 102, 241, 0.3));
 }
 
 @keyframes shimmerText {
   0% { background-position: 0% center; }
-  100% { background-position: 200% center; }
+  100% { background-position: 300% center; }
 }
 
 .logo p {
@@ -163,6 +189,7 @@
   font-size: 1rem;
   font-weight: 500;
   line-height: 1.5;
+  opacity: 0.9;
 }
 
 /* Auth Header with Tabs */
@@ -193,19 +220,45 @@
   font-weight: 600;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: all var(--transition-base);
+  transition: all var(--transition-spring);
   position: relative;
+  overflow: hidden;
+}
+
+.tab-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(217, 70, 239, 0.1) 100%);
+  opacity: 0;
+  transition: opacity var(--transition-base);
+  border-radius: inherit;
 }
 
 .tab-btn:hover {
-  color: var(--primary-500);
-  background: rgba(99, 102, 241, 0.05);
+  color: #6366f1;
+}
+
+.tab-btn:hover::before {
+  opacity: 1;
 }
 
 .tab-btn.active {
   background: var(--bg-color);
-  color: var(--primary-600);
-  box-shadow: var(--shadow-sm);
+  color: #6366f1;
+  box-shadow: var(--shadow-md), 0 0 20px rgba(99, 102, 241, 0.15);
+}
+
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40%;
+  height: 2px;
+  background: linear-gradient(90deg, #6366f1, #d946ef);
+  border-radius: var(--radius-full);
 }
 
 /* Theme Toggle Button */
@@ -419,7 +472,7 @@
   content: '';
 }
 
-/* Primary Button */
+/* Primary Button - 2025 Style */
 .btn {
   width: 100%;
   padding: var(--space-4);
@@ -428,31 +481,50 @@
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all var(--transition-base);
+  transition: all var(--transition-spring);
   margin-top: var(--space-4);
   position: relative;
   overflow: hidden;
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+  background: linear-gradient(135deg, #6366f1 0%, #d946ef 50%, #ec4899 100%);
+  background-size: 200% 200%;
   color: white;
-  box-shadow: 0 4px 14px -3px rgba(99, 102, 241, 0.4);
+  box-shadow: 0 4px 20px -3px rgba(99, 102, 241, 0.5);
+  animation: btnGradientAuth 4s ease infinite;
+}
+
+@keyframes btnGradientAuth {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
 .btn-primary::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, transparent 50%);
+  background: linear-gradient(180deg, rgba(255,255,255,0.25) 0%, transparent 50%);
   opacity: 0;
   transition: opacity var(--transition-base);
 }
 
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 60%);
+  transform: scale(0);
+  opacity: 0;
+  transition: transform 0.5s ease, opacity 0.3s ease;
+}
+
 .btn-primary:hover {
-  background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
-  box-shadow: 0 8px 25px -5px rgba(99, 102, 241, 0.5);
-  transform: translateY(-2px);
+  box-shadow: 0 10px 35px -5px rgba(99, 102, 241, 0.6), 0 0 40px rgba(217, 70, 239, 0.3);
+  transform: translateY(-4px) scale(1.02);
 }
 
 .btn-primary:hover::before {
@@ -460,14 +532,20 @@
 }
 
 .btn-primary:active {
-  transform: translateY(0);
-  box-shadow: 0 4px 14px -3px rgba(99, 102, 241, 0.4);
+  transform: translateY(0) scale(0.98);
+}
+
+.btn-primary:active::after {
+  transform: scale(2);
+  opacity: 1;
+  transition: transform 0s, opacity 0s;
 }
 
 .btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none !important;
+  animation: none;
 }
 
 /* Links */
@@ -578,28 +656,54 @@
   border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
-/* Dark Mode for Container */
+/* Dark Mode for Container - 2025 */
 .dark-mode .container {
   background:
     linear-gradient(135deg,
-      #1e1b4b 0%,
+      #0f0f14 0%,
+      #1e1b4b 25%,
       #312e81 50%,
-      #1e1b4b 100%
+      #1e1b4b 75%,
+      #0f0f14 100%
     );
   background-size: 400% 400%;
-  animation: gradientShift 15s ease infinite;
+  animation: authGradientShift 20s ease infinite;
+}
+
+.dark-mode .container::before {
+  background:
+    radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.2) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(217, 70, 239, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(168, 85, 247, 0.1) 0%, transparent 30%),
+    radial-gradient(circle at 60% 60%, rgba(99, 102, 241, 0.12) 0%, transparent 40%);
+}
+
+.dark-mode .container::after {
+  background: radial-gradient(circle, rgba(217, 70, 239, 0.2) 0%, rgba(99, 102, 241, 0.15) 40%, transparent 70%);
 }
 
 .dark-mode .message.error {
-  background: linear-gradient(135deg, rgba(127, 29, 29, 0.3) 0%, rgba(127, 29, 29, 0.1) 100%);
+  background: linear-gradient(135deg, rgba(127, 29, 29, 0.4) 0%, rgba(127, 29, 29, 0.15) 100%);
   color: #fca5a5;
-  border-color: rgba(239, 68, 68, 0.3);
+  border-color: rgba(239, 68, 68, 0.4);
 }
 
 .dark-mode .message.success {
-  background: linear-gradient(135deg, rgba(6, 78, 59, 0.3) 0%, rgba(6, 78, 59, 0.1) 100%);
+  background: linear-gradient(135deg, rgba(6, 78, 59, 0.4) 0%, rgba(6, 78, 59, 0.15) 100%);
   color: #6ee7b7;
-  border-color: rgba(16, 185, 129, 0.3);
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.dark-mode .message.warning {
+  background: linear-gradient(135deg, rgba(120, 53, 15, 0.4) 0%, rgba(120, 53, 15, 0.15) 100%);
+  color: #fcd34d;
+  border-color: rgba(245, 158, 11, 0.4);
+}
+
+.dark-mode .message.info {
+  background: linear-gradient(135deg, rgba(30, 58, 138, 0.4) 0%, rgba(30, 58, 138, 0.15) 100%);
+  color: #93c5fd;
+  border-color: rgba(59, 130, 246, 0.4);
 }
 
 /* ============================================

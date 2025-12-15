@@ -37,7 +37,7 @@ const limiter = rateLimit({
 
 app.use('/api/', limiter);
 
-// CORS configuration
+// CORS configuration - Allow all origins for mobile app compatibility
 app.use(cors({
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps, Postman, etc.)
@@ -53,10 +53,11 @@ app.use(cors({
       'http://localhost:8000',
       'http://localhost:3000',
       'http://localhost:8080',
-      // Mobile apps
+      // Mobile apps - Capacitor uses https://localhost on Android
       'capacitor://localhost',
       'ionic://localhost',
       'http://localhost',
+      'https://localhost',
       'http://10.0.2.2:3000',
       'http://10.0.2.2:8080',
     ];
@@ -71,19 +72,24 @@ app.use(cors({
       return callback(null, true);
     }
 
-    if (allowedOrigins.indexOf(origin) !== -1 || origin.includes('capacitor://') || origin.includes('ionic://')) {
-      callback(null, true);
-    } else if (process.env.NODE_ENV === 'development') {
-      console.log('⚠️ CORS: Allowing origin in dev mode:', origin);
+    // Allow Capacitor/Ionic mobile apps (they use https://localhost or capacitor://)
+    if (origin.includes('capacitor://') || origin.includes('ionic://') || origin === 'https://localhost' || origin === 'http://localhost') {
+      console.log('✅ CORS: Allowing mobile app origin:', origin);
+      return callback(null, true);
+    }
+
+    if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
-      console.log('❌ CORS: Blocked origin:', origin);
-      callback(new Error('Not allowed by CORS'));
+      // In production, allow all origins for mobile compatibility
+      // Mobile apps may have varying origins
+      console.log('⚠️ CORS: Allowing origin:', origin);
+      callback(null, true);
     }
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
 }));
 
 // Body parsing middleware

@@ -1,16 +1,9 @@
 // Authentication module using Firebase Auth
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  sendEmailVerification,
-  sendPasswordResetEmail,
-  signOut,
-  onAuthStateChanged,
-} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+// Using compat version for better Android WebView support
+let app, auth;
+let firebaseInitialized = false;
 
-// Firebase configuration - Replace with your Firebase project config
+// Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyD_ybjYpySqzUrd3zfuF3O0g29bds8C3Ok",
   authDomain: "vault-28864.firebaseapp.com",
@@ -18,52 +11,85 @@ const firebaseConfig = {
   storageBucket: "vault-28864.firebasestorage.app",
   messagingSenderId: "31539120914",
   appId: "1:31539120914:web:3367e923dc5203f3c981cb"
+};
+
+// Initialize Firebase with compat SDK (loaded via script tags in HTML)
+function initFirebase() {
+  if (firebaseInitialized) return;
+
+  try {
+    // Check if Firebase compat is available (loaded via script tag)
+    if (typeof firebase !== 'undefined') {
+      // Using compat SDK
+      if (!firebase.apps.length) {
+        app = firebase.initializeApp(firebaseConfig);
+      } else {
+        app = firebase.apps[0];
+      }
+      auth = firebase.auth();
+      firebaseInitialized = true;
+      console.log('✅ Firebase initialized (compat SDK)');
+    } else {
+      console.error('❌ Firebase SDK not loaded. Make sure firebase scripts are included in HTML.');
+    }
+  } catch (error) {
+    console.error('❌ Firebase initialization error:', error);
+  }
 }
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
 // ===========================================
-// PRODUCTION API URL - Update this after deploying to Render
+// PRODUCTION API URL - Your Render backend
 // ===========================================
 const PRODUCTION_API_URL = 'https://secure-vault-api-l762.onrender.com/api';
 
 // Get API base URL based on platform
 function getApiBaseUrl() {
-  const hostname = window.location.hostname;
-
-  // Check if running in production (not localhost)
-  if (hostname !== 'localhost' && hostname !== '127.0.0.1' && !hostname.includes('192.168')) {
-    console.log('🌐 Production environment detected');
-    return PRODUCTION_API_URL;
-  }
-
-  // Check if running in Capacitor
-  if (typeof window !== 'undefined') {
-    // Check for Capacitor
-    if (window.Capacitor && window.Capacitor.getPlatform) {
+  // Check if running in Capacitor FIRST (mobile app)
+  if (typeof window !== 'undefined' && window.Capacitor) {
+    if (window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) {
+      console.log('📱 Capacitor native platform detected');
+      return PRODUCTION_API_URL;
+    }
+    if (window.Capacitor.getPlatform) {
       const platform = window.Capacitor.getPlatform();
       console.log('📱 Running on platform:', platform);
-
-      // For mobile apps, use production API
       if (platform === 'android' || platform === 'ios') {
         console.log('🔗 Mobile app detected, using production API');
         return PRODUCTION_API_URL;
       }
     }
+  }
 
-    // Check if running in Android WebView (alternative detection)
-    if (navigator.userAgent.includes('Android') && !navigator.userAgent.includes('Chrome')) {
-      console.log('🔗 Detected Android WebView, using production API');
+  // Check user agent for Android WebView
+  if (typeof navigator !== 'undefined' && navigator.userAgent) {
+    const ua = navigator.userAgent;
+    // Android WebView detection
+    if (ua.includes('wv') || (ua.includes('Android') && ua.includes('Version/'))) {
+      console.log('🔗 Android WebView detected, using production API');
       return PRODUCTION_API_URL;
     }
   }
 
-  // For local web browser development
-  const url = 'http://localhost:3000/api';
-  console.log('🔗 Using local development API URL:', url);
-  return url;
+  // Check hostname
+  const hostname = window.location.hostname;
+
+  // Capacitor uses 'localhost' on Android, but we already checked for Capacitor above
+  // So if we're here and hostname is localhost, it's actual localhost dev
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    // Double check it's not Capacitor
+    if (window.location.protocol === 'https:' || window.location.port === '') {
+      // Likely Capacitor (uses https://localhost on Android)
+      console.log('🔗 HTTPS localhost detected (likely Capacitor), using production API');
+      return PRODUCTION_API_URL;
+    }
+    const url = 'http://localhost:3000/api';
+    console.log('🔗 Using local development API URL:', url);
+    return url;
+  }
+
+  // Any other case - use production
+  console.log('🌐 Production environment detected');
+  return PRODUCTION_API_URL;
 }
 
 const API_BASE_URL = getApiBaseUrl();
@@ -166,11 +192,32 @@ if (confirmPassword && registerPassword) {
   });
 }
 
+// Initialize Firebase when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+  initFirebase();
+});
+
+// Also try to init immediately in case DOM is already ready
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+  initFirebase();
+}
+
 // Login form handler
 const loginForm = document.getElementById('loginForm');
 if (loginForm) {
   loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+
+    // Ensure Firebase is initialized
+    if (!firebaseInitialized) {
+      initFirebase();
+    }
+
+    if (!auth) {
+      showMessage('Firebase not initialized. Please refresh the page.', 'error');
+      return;
+    }
+
     setLoading(true);
 
     const email = document.getElementById('loginEmail').value;
@@ -178,8 +225,8 @@ if (loginForm) {
     const rememberMe = document.getElementById('rememberMe')?.checked || false;
 
     try {
-      // Sign in with Firebase Auth
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      // Sign in with Firebase Auth (compat SDK)
+      const userCredential = await auth.signInWithEmailAndPassword(email, password);
       const idToken = await userCredential.user.getIdToken();
 
       // Verify token with backend and get JWT
@@ -238,6 +285,17 @@ const registerForm = document.getElementById('registerForm');
 if (registerForm) {
   registerForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+
+    // Ensure Firebase is initialized
+    if (!firebaseInitialized) {
+      initFirebase();
+    }
+
+    if (!auth) {
+      showMessage('Firebase not initialized. Please refresh the page.', 'error');
+      return;
+    }
+
     setLoading(true);
 
     const email = document.getElementById('registerEmail').value;
@@ -252,11 +310,11 @@ if (registerForm) {
     }
 
     try {
-      // Create user with Firebase Auth
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      
+      // Create user with Firebase Auth (compat SDK)
+      const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+
       // Send email verification
-      await sendEmailVerification(userCredential.user);
+      await userCredential.user.sendEmailVerification();
 
       // Get ID token and verify with backend
       const idToken = await userCredential.user.getIdToken();
@@ -346,12 +404,23 @@ const forgotPasswordForm = document.getElementById('forgotPasswordForm');
 if (forgotPasswordForm) {
   forgotPasswordForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+
+    // Ensure Firebase is initialized
+    if (!firebaseInitialized) {
+      initFirebase();
+    }
+
+    if (!auth) {
+      showMessage('Firebase not initialized. Please refresh the page.', 'error');
+      return;
+    }
+
     setLoading(true);
 
     const email = document.getElementById('resetEmail').value;
 
     try {
-      await sendPasswordResetEmail(auth, email);
+      await auth.sendPasswordResetEmail(email);
       showMessage('Password reset email sent! Check your inbox.', 'success');
     } catch (error) {
       console.error('Password reset error:', error);
@@ -379,14 +448,32 @@ if (themeToggleAuth) {
 }
 
 // Check auth state - redirect if already logged in
-onAuthStateChanged(auth, (user) => {
-  if (user && window.location.pathname.includes('index.html')) {
-    // User is logged in, redirect to dashboard
-    const token = localStorage.getItem('jwt_token');
-    if (token) {
-      window.location.href = 'dashboard.html';
-    }
+function setupAuthStateListener() {
+  if (!auth) {
+    // Retry after a short delay if Firebase not yet initialized
+    setTimeout(() => {
+      initFirebase();
+      if (auth) {
+        setupAuthStateListener();
+      }
+    }, 500);
+    return;
   }
+
+  auth.onAuthStateChanged((user) => {
+    if (user && window.location.pathname.includes('index.html')) {
+      // User is logged in, redirect to dashboard
+      const token = localStorage.getItem('jwt_token');
+      if (token) {
+        window.location.href = 'dashboard.html';
+      }
+    }
+  });
+}
+
+// Set up auth state listener after Firebase is ready
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(setupAuthStateListener, 100);
 });
 
 // Password strength analyzer (simplified version)

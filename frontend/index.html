@@ -6,10 +6,14 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#6366f1">
-    <title>Secure Password Manager</title>
+    <meta name="theme-color" content="#050507">
+    <meta name="description" content="Secure Vault - Zero-knowledge password manager with AES-256 encryption">
+    <title>Secure Vault - Password Manager</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/auth.css">
+    <!-- Preload fonts for better performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <!-- Firebase SDK - Using compat version for Android WebView compatibility -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
@@ -18,7 +22,25 @@
     <div class="container">
         <div class="auth-container">
             <div class="logo">
-                <h1>🔒 Secure Vault</h1>
+                <div class="logo-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L4 5V11.09C4 16.14 7.41 20.85 12 22C16.59 20.85 20 16.14 20 11.09V5L12 2Z"
+                              fill="url(#shieldGradient)" stroke="url(#shieldStroke)" stroke-width="1.5"/>
+                        <path d="M9 12L11 14L15 10" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <defs>
+                            <linearGradient id="shieldGradient" x1="4" y1="2" x2="20" y2="22" gradientUnits="userSpaceOnUse">
+                                <stop offset="0%" stop-color="#6366f1"/>
+                                <stop offset="50%" stop-color="#8b5cf6"/>
+                                <stop offset="100%" stop-color="#d946ef"/>
+                            </linearGradient>
+                            <linearGradient id="shieldStroke" x1="4" y1="2" x2="20" y2="22" gradientUnits="userSpaceOnUse">
+                                <stop offset="0%" stop-color="#818cf8"/>
+                                <stop offset="100%" stop-color="#e879f9"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <h1>Secure Vault</h1>
                 <p>Your passwords, protected with zero-knowledge encryption</p>
             </div>
 

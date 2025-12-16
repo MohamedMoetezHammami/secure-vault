@@ -9,19 +9,19 @@
     "SplashScreen": {
       "launchShowDuration": 2000,
       "launchAutoHide": true,
-      "backgroundColor": "#6366f1",
+      "backgroundColor": "#050507",
       "androidSplashResourceName": "splash",
       "androidScaleType": "CENTER_CROP",
       "showSpinner": true,
       "androidSpinnerStyle": "large",
       "iosSpinnerStyle": "small",
-      "spinnerColor": "#ffffff",
+      "spinnerColor": "#6366f1",
       "splashFullScreen": true,
       "splashImmersive": true
     },
     "StatusBar": {
       "style": "dark",
-      "backgroundColor": "#6366f1"
+      "backgroundColor": "#050507"
     },
     "Keyboard": {
       "resize": "body",
